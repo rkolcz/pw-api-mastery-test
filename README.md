@@ -1,8 +1,5 @@
 > ⚠️ Work in progress  
-> ⚠️ Work in progress  
 
-
-Notatki do repo:
 ## Playwright API testing framework – three robust architectural approaches
 
 
@@ -116,6 +113,9 @@ Utwórz bazowy plik z fixtures (```fixtures/base.fixtures.ts```), w którym bier
 
 ### Krok 3: Zbuduj finalny URL (base + path + query params)
 Dodaj ```RequestHandler``` metodę ```getUrl()``` (najlepiej jako metodę pomocniczą wewnątrz klasy), która składa kompletny adres endpointu na podstawie danych zebranych wcześniej w builderze: bierze ```baseUrl``` ustawiony w teście przez ```.url(...)``` albo (jeśli nie podasz) używa ```defaultBaseUrl```, dokleja ```apiPath``` ustawiony przez ```.path(...)```, zamienia ```queryParams``` podane przez ```.params({ ... })``` na string w formacie ```key=value&...```. W efekcie niezależnie od tego, czy w teście podasz ```.url(...)```, dostajesz zawsze poprawny, gotowy do użycia adres — a parametry query nie są “ręcznie klejone”, tylko generowane automatycznie.
+
+### Krok 4: Dodaj konstruktor do RequestHandler
+Dodaj do klasy RequestHandler konstruktor, który przyjmuje dwa wymagane parametry: request (czyli Playwrightowy APIRequestContext) oraz baseUrl. Konstruktor zapisuje te wartości w polach klasy, dzięki czemu handler ma dostęp do kontekstu wykonywania requestów oraz domyślnego adresu API. Od tego momentu RequestHandler jest w pełni przygotowany do wykonywania realnych wywołań HTTP, a nie tylko do budowania URL-i.
 
 
 </details>

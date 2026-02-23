@@ -1,11 +1,10 @@
 import { test } from '../../../fixtures/ api.fixture';
 import { RequestHandler } from '../../../utils/request-handler'
 
-test('first', async({}) => {
-    const api = new RequestHandler()
+test('first', async({api}) => {
    
     api
-        // .url('https://console-log.pl') //fallback to defaultBaseUrl if undefined
+        .url('https://tst.pl') //fallback to defaultBaseUrl if undefined
         .path('/articles')
         .params({limit:10, offset:0})
         .headers({Authorization: 'authHeader'})

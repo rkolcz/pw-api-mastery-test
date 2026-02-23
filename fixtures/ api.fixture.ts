@@ -6,8 +6,9 @@ export type TestOptions = {
 }
 
 export const test = base.extend<TestOptions>({
-    api: async ({}, use) => {
-        const requestHandler = new RequestHandler()
+    api: async ({request}, use) => {
+        const baseUrl = process.env.API_BASE_URL as string //@ToDo
+        const requestHandler = new RequestHandler(request, baseUrl)
         await use(requestHandler)
     }
 })

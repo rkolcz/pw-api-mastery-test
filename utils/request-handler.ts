@@ -1,14 +1,22 @@
 
 //These methods will collect from the test body all those components independently to perform API requests. (add parameters inside of the method).
+import { APIRequestContext } from '@playwright/test'
 
 export class RequestHandler {
 
-    private baseUrl?: string
-    private defaultBaseUrl: string = process.env.API_BASE_URL as string //temporary injection @ToDo
+    private request: APIRequestContext
+    private baseUrl: string
+    private defaultBaseUrl: string
     private apiPath: string = ''
     private queryParams: object = {}
     private apiHeaders: object = {}
     private apiBody: object = {}
+
+    constructor(request: APIRequestContext, apiBaseUrl: string){
+        this.request = request
+        this.defaultBaseUrl = apiBaseUrl
+
+    }
 
     url(url: string){
         this.baseUrl = url
