@@ -1,6 +1,52 @@
-# Pw - 3 podejścia do warstwy HTTP
+> ⚠️ Work in progress  
+> ⚠️ Work in progress  
 
-## Własnym framework do testów API
+
+Notatki do repo:
+## Playwright API testing framework – three robust architectural approaches
+
+
+### 1. “Domyślnie” w Playwright: request/APIRequestContext
+**Plusy:**
+- działa w tym samym runnerze co UI (@playwright/test)
+- wbudowane: baseURL, storageState, trace, retry, timeouts, reporty
+- łatwo mieszać API + UI (seed danych, logowanie przez API itd.)
+
+**Zastosowanie:**
+Większość projektów, szczególnie gdy API wspiera UI testy.
+
+### 2. Axios (albo inny HTTP client)
+**Plusy:**
+- interceptory, transformacje, ekosystem
+- łatwo użyć też poza Playwrightem (np. w utilach)
+
+**Minusy:**
+- tracisz część integracji Playwrighta (reporting, trace powiązany z requestami, spójne timeouts, fixtures)
+- auth/storageState mniej “spójne” z UI światem
+- utrzymujesz dodatkową zależność i konfigurację
+
+**Zastosowanie:**
+Testy API niezależnie od Playwrighta (np. też w innych runnerach), bądź potrzebujesz specyficznych funkcji klienta HTTP (np. nietypowe interceptory, custom transport)
+
+### 3. Własny framework (wyższa abstrakcja)
+To jest nadal Playwright pod spodem, tylko tworzysz request handler/client, fluent API typu .path().params().getRequest(200), oraz wspólne asercje, walidatory statusów, logowanie, modele. To podejście to krok w stronę bardziej “frameworkowego” i dojrzałego testowania API: testy są bardziej czytelne i stabilne w utrzymaniu, a logika składania requestów jest scentralizowana i możliwa do rozbudowy (np. o logowanie, walidację statusów, retry, wspólne asercje).
+
+**Plusy:**
+- czytelniejsze testy (“business language”)
+- mniej duplikacji
+- łatwiej utrzymać duże API suite
+
+**Minusy:**
+- możesz łatwo przeabstrahować (debug trudniejszy)
+- trzeba pilnować, żeby framework nie ukrywał zbyt dużo (np. request/response)
+
+**Zastosowanie:**
+Średni/duży zestaw testów API, kilka osób w zespole.
+<br >
+<br >
+<br >
+
+### Własnym framework do testów API
 <details>
 
 <summary>Wstęp</summary>
@@ -63,58 +109,20 @@ Ta warstwa abstrakcji przenosi “mechanikę” requestów do jednego miejsca, a
 W pliku ```utils/request-handler.ts``` tworzysz klasę ```RequestHandler```, która zbiera (kolekcjonuje) parametry requestu z testu, zapisuje je w polach prywatnych, zwraca this z każdej metody, żeby umożliwić “łańcuchowanie” wywołań.
 
 > [!NOTE]
-> To podejście jest znane jako: 
-> Builder pattern (składanie obiektu krok po kroku)
-> Fluent Interface Design (płynny interfejs, chaining)
+> To podejście jest znane jako: Builder pattern (składanie obiektu krok po kroku) lub Fluent Interface Design (płynny interfejs, chaining)
 
 ### Krok 2: Dodaj fixture i wstrzykuj RequestHandler do testów
 Utwórz bazowy plik z fixtures (```fixtures/base.fixtures.ts```), w którym bierzesz domyślny ```test``` z pw jako ```base```, a następnie rozszerzasz go o fixture. Dzięki temu ```RequestHandler``` nie jest już tworzony ręcznie w każdym teście.
+
+### Krok 3: Zbuduj finalny URL (base + path + query params)
+Dodaj ```RequestHandler``` metodę ```getUrl()``` (najlepiej jako metodę pomocniczą wewnątrz klasy), która składa kompletny adres endpointu na podstawie danych zebranych wcześniej w builderze: bierze ```baseUrl``` ustawiony w teście przez ```.url(...)``` albo (jeśli nie podasz) używa ```defaultBaseUrl```, dokleja ```apiPath``` ustawiony przez ```.path(...)```, zamienia ```queryParams``` podane przez ```.params({ ... })``` na string w formacie ```key=value&...```. W efekcie niezależnie od tego, czy w teście podasz ```.url(...)```, dostajesz zawsze poprawny, gotowy do użycia adres — a parametry query nie są “ręcznie klejone”, tylko generowane automatycznie.
+
 
 </details>
 
 ____
 
-### 1. “Domyślnie” w Playwright: request/APIRequestContext
-**Plusy:**
-- działa w tym samym runnerze co UI (@playwright/test)
-- wbudowane: baseURL, storageState, trace, retry, timeouts, reporty
-- łatwo mieszać API + UI (seed danych, logowanie przez API itd.)
-
-**Zastosowanie:**
-Większość projektów, szczególnie gdy API wspiera UI testy.
-
-### 2. Axios (albo inny HTTP client)
-**Plusy:**
-- interceptory, transformacje, ekosystem
-- łatwo użyć też poza Playwrightem (np. w utilach)
-
-**Minusy:**
-- tracisz część integracji Playwrighta (reporting, trace powiązany z requestami, spójne timeouts, fixtures)
-- auth/storageState mniej “spójne” z UI światem
-- utrzymujesz dodatkową zależność i konfigurację
-
-**Zastosowanie:**
-Testy API niezależnie od Playwrighta (np. też w innych runnerach), bądź potrzebujesz specyficznych funkcji klienta HTTP (np. nietypowe interceptory, custom transport)
-
-### 3. Własny framework (wyższa abstrakcja)
-To jest nadal Playwright pod spodem, tylko tworzysz request handler/client, fluent API typu .path().params().getRequest(200), oraz wspólne asercje, walidatory statusów, logowanie, modele. To podejście to krok w stronę bardziej “frameworkowego” i dojrzałego testowania API: testy są bardziej czytelne i stabilne w utrzymaniu, a logika składania requestów jest scentralizowana i możliwa do rozbudowy (np. o logowanie, walidację statusów, retry, wspólne asercje).
-
-**Plusy:**
-- czytelniejsze testy (“business language”)
-- mniej duplikacji
-- łatwiej utrzymać duże API suite
-
-**Minusy:**
-- możesz łatwo przeabstrahować (debug trudniejszy)
-- trzeba pilnować, żeby framework nie ukrywał zbyt dużo (np. request/response)
-
-**Zastosowanie:**
-Średni/duży zestaw testów API, kilka osób w zespole.
-<br >
-<br >
-<br >
-
-### Wnioski do zastosowania w projekcie
+### Wnioski...
 **Najpierw:** surowe request + proste helpery (clients/, builders/, asserts/)
 
 **Potem** (gdy testów przybywa): fluent interface / request handler
