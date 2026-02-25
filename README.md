@@ -1,47 +1,46 @@
-> ⚠️ Work in progress  
-> Realne porównanie trzech podejść do testów API
+> ⚠️ Work in progress - Realne porównanie trzech podejść do testów API
 
-## Playwright API testing framework – three robust architectural approaches
+<a href="https://aimeos.org/">
+    <img src="https://brandlogos.net/wp-content/uploads/2025/11/playwright-logo_brandlogos.net_attst-768x575.png" alt="pw logo" title="pw" align="right" height="30" />
+</a>
+
+# Playwright API testing framework
+<p align="right">
+  <i align="center">Three robust architectural approaches 🚀</i>
+</p>
 
 
-### 1. “Domyślnie” w Playwright: request/APIRequestContext
-**Plusy:**
-- działa w tym samym runnerze co UI (@playwright/test)
-- wbudowane: baseURL, storageState, trace, retry, timeouts, reporty
-- łatwo mieszać API + UI (seed danych, logowanie przez API itd.)
 
-**Zastosowanie:**
-Większość projektów, szczególnie gdy API wspiera UI testy.
+<table width="100%">
+  <tr>
+    <td width="33%" valign="top">
+      <h3 align="center"><img src="api-ico.png" width="20" height="20" style="vertical-align: middle;"> Domyślnie</h3>
+      <p align="center">Requesty wykonywane przez request / APIRequestContext w tym samym runnerze i kontekście co UI, z jego mechanizmami (fixtures, storageState, retry, timeouts, reporting).</p>
+    </td>
+    <td width="33%" valign="top">
+      <h3 align="center"><img src="api-ico.png" width="20" height="20" style="vertical-align: middle;"> Axios (HTTP client)</h3>
+      <p align="center">Requesty wykonywane przez osobną bibliotekę HTTP, niezależnie od Playwrighta, więc autoryzacja, konfiguracja i obsługa timeoutów/retry są zarządzane oddzielnie.<br></p>
+    </td>
+    <td width="33%" valign="top">
+      <h3 align="center"><img src="api-ico.png" width="20" height="20" style="vertical-align: middle;"> Własny framework</h3>
+      <p align="center">Własny klient opakowujący APIRequestContext, który centralizuje budowę requestów, walidację odpowiedzi i asercje, aby testy korzystały z jednego, spójnego interfejsu.<br><br></p>
+    </td>
+  </tr>
+</table>
 
-### 2. Axios (albo inny HTTP client)
-**Plusy:**
-- interceptory, transformacje, ekosystem
-- łatwo użyć też poza Playwrightem (np. w utilach)
 
-**Minusy:**
-- tracisz część integracji Playwrighta (reporting, trace powiązany z requestami, spójne timeouts, fixtures)
-- auth/storageState mniej “spójne” z UI światem
-- utrzymujesz dodatkową zależność i konfigurację
+<br>
 
-**Zastosowanie:**
-Testy API niezależnie od Playwrighta (np. też w innych runnerach), bądź potrzebujesz specyficznych funkcji klienta HTTP (np. nietypowe interceptory, custom transport)
+### Podejścia do testów API w Playwright
 
-### 3. Własny framework (wyższa abstrakcja)
-To jest nadal Playwright pod spodem, tylko tworzysz request handler/client, fluent API typu .path().params().getRequest(200), oraz wspólne asercje, walidatory statusów, logowanie, modele. To podejście to krok w stronę bardziej “frameworkowego” i dojrzałego testowania API: testy są bardziej czytelne i stabilne w utrzymaniu, a logika składania requestów jest scentralizowana i możliwa do rozbudowy (np. o logowanie, walidację statusów, retry, wspólne asercje).
+| Podejście | Plusy | Minusy | Zastosowanie |
+|---|---|---|---|
+| **APIRequestContext (wbudowane Playwrighta)** | Ten sam runner co UI • wbudowane `baseURL`, `storageState`, retry, trace, raporty • łatwe łączenie API + UI (seed/logowanie) | Mniej zaawansowanych funkcji manipulacji requestem niż dedykowane klienty HTTP | Start projektu: surowe requesty + proste helpery (`clients/`, `builders/`, `asserts/`); domyślne podejście dla testów wspierających UI |
+| **Zewnętrzny klient HTTP (np. Axios)** | Interceptory i transformacje • bogaty ekosystem • można używać poza Playwrightem | Brak integracji z Playwright (trace, fixtures, reporting) • osobna konfiguracja auth/timeoutów • dodatkowa zależność | Tylko gdy potrzebne funkcje klienta HTTP lub współdzielenie testów/klienta poza Playwrightem |
+| **Własna abstrakcja (Request Client/Handler)** | Czytelne testy („business language”) • mniej duplikacji • centralna konfiguracja requestów i asercji | Ryzyko przeabstrahowania • trudniejszy debug jeśli ukryje zbyt dużo | Gdy liczba testów rośnie: wprowadzenie fluent interface / request handler i centralizacji logiki requestów |
 
-**Plusy:**
-- czytelniejsze testy (“business language”)
-- mniej duplikacji
-- łatwiej utrzymać duże API suite
 
-**Minusy:**
-- możesz łatwo przeabstrahować (debug trudniejszy)
-- trzeba pilnować, żeby framework nie ukrywał zbyt dużo (np. request/response)
 
-**Zastosowanie:**
-Średni/duży zestaw testów API, kilka osób w zespole.
-<br >
-<br >
 <br >
 
 ### Własnym framework do testów API
