@@ -124,6 +124,9 @@ Dodaj do klasy RequestHandler konstruktor, który przyjmuje dwa wymagane paramet
 ### Krok 5: Dodaj metodę get() która wykonuje request i usuwa „redundancję” z testów
 Przenosisz z testów do frameworka wszystkie powtarzalne rzeczy związane z wysyłką GET-a: wykonanie requestu, walidację status code oraz automatyczne pobranie JSON-a z odpowiedzi. Dodajesz w RequestHandler nową metodę ```get()``` (lub ```getRequest()```), która buduje finalny URL przez ```getUrl()```, wysyła ```this.request.get(...)```, dołącza nagłówki tylko jeśli zostały zebrane przez ```.headers(...)```, a następnie sprawdza status po oczekiwanej wartości przekazanej jako argument (np. ```get(200)```). Na końcu metoda zwraca już gotowy obiekt JSON, więc w samym teście zostają tylko asercje na danych, a kod robi się krótszy, bardziej czytelny i łatwiejszy w utrzymaniu.
 
+### Krok 5: Dodaj pozostałe metody analogicznie do get()
+
+
 </details>
 
 ____
