@@ -1,4 +1,4 @@
-> ⚠️ Work in progress - Realne porównanie trzech podejść do testów API
+> ⚠️ Work in progress
 
 <a href="https://aimeos.org/">
     <img src="https://brandlogos.net/wp-content/uploads/2025/11/playwright-logo_brandlogos.net_attst-768x575.png" alt="pw logo" title="pw" align="right" height="30" />
@@ -9,7 +9,10 @@
   <i align="center">Three robust architectural approaches 🚀</i>
 </p>
 
+<br>
 
+## <img src="paragraph.png" width="20" height="22" style="vertical-align: middle; filter: invert(1);"> Porównanie podejść do testów API
+Tabela przedstawia konsekwencje architektoniczne wyboru podejścia
 
 <table width="100%">
   <tr>
@@ -28,10 +31,11 @@
   </tr>
 </table>
 
-
 <br>
 
-### Podejścia do testów API w Playwright
+## <img src="paragraph.png" width="20" height="22" style="vertical-align: middle; filter: invert(1);"> Podejścia do testów API w Playwright
+Testy API w Playwright można realizować na kilka sposobów, zależnie od skali projektu i potrzeb zespołu. Poniżej przedstawiono trzy najczęściej spotykane podejścia.
+
 
 | Podejście | Plusy | Minusy | Zastosowanie |
 |---|---|---|---|
